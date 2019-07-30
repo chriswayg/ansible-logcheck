@@ -2,11 +2,10 @@
 ---
 - name: install dependencies
   apt:
-    name: "{{ item }}"
+    name: "{{ logcheck_dependencies }}"
     state: "{{ apt_install_state | default('latest') }}"
     update_cache: true
     cache_valid_time: "{{ apt_update_cache_valid_time | default(3600) }}"
-  with_items: "{{ logcheck_dependencies }}"
   tags:
     - configuration
     - logcheck
@@ -14,9 +13,8 @@
 
 - name: install additional
   apt:
-    name: "{{ item }}"
+    name: "{{ logcheck_install }}"
     state: "{{ apt_install_state | default('latest') }}"
-  with_items: "{{ logcheck_install }}"
   tags:
     - configuration
     - logcheck
@@ -54,7 +52,7 @@
     group: root
     mode: 0644
     force: true
-  when: logcheck_manage_cron_d
+  when: logcheck_manage_cron_d | bool
   tags:
     - configuration
     - logcheck
@@ -67,7 +65,7 @@
     owner: root
     group: logcheck
     mode: 0640
-  when: logcheck_custom_ignores
+  when: logcheck_custom_ignores | length > 0
   tags:
     - configuration
     - logcheck
